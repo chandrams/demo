@@ -12,16 +12,16 @@ jobs:
       - name: Checkout autotune
         uses: actions/checkout@v2
         with:
-          repository: kruize/autotune
+          repository: bharathappali/autotune
+          ref: add-fix-for-kustomize
           path: autotune
 
       - name: Setup Minikube
-        uses: manusa/actions-setup-minikube@v2.4.2
+        uses: manusa/actions-setup-minikube@v2.6.0
         with:
-          minikube version: 'v1.22.0'
-          kubernetes version: 'v1.22.0'
-          start args: '--cpus 3'
-          
+          minikube version: 'v1.25.1'
+          kubernetes version: 'v1.24.0'
+                    
       - name: Minikube info
         run: |
           kubectl get nodes
@@ -31,4 +31,5 @@ jobs:
         run: |
           echo Install Prometheus on minikube  
           cd autotune/scripts
-          ./prometheus_on_minikube.sh -as    
+          cat prometheus_on_minikube.sh 
+          ./prometheus_on_minikube.sh -as -r v0.9.0   

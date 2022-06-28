@@ -1,31 +1,41 @@
-name: Run a few tests on Push 
+name: workflow-dispatch
 
-# Controls when the action will run. 
 on:
-  push: 
-    branches: [ integration-channel-RM-EM ]
-    paths-ignore:
-      - 'docs/**'
-      - 'design/**'
-      - 'examples/**'
-      - 'extensions/**'
-
-  # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
-
+    inputs:
+      repository:
+        description: 'Github Repository'
+        required: false
+        default: 'kruize/autotune'
+      branch:
+        description: 'Branch name'
+        required: false
+        default: 'integration-channel-RM-EM'
+      image: 
+        description: 'Autotune Docker image'
+        required: false
+        default: 'autotune:int-test'
+      testsuite:
+         description: 'Testsuite to be executed'
+         required: false
+         default: 'basic_api_tests'
+        
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v2
+      - run: |
+          echo "Repo: ${{ github.event.inputs.repository }}"
+          echo "Branch: ${{ github.event.inputs.branch }}"
+          echo "image: ${{ github.event.inputs.image }}"
+          echo "Testsuite: ${{ github.event.inputs.testsuite }}"
+   
       - name: Checkout autotune
         uses: actions/checkout@v2
         with:
-          repository: kruize/autotune
-          ref: integration-channel-RM-EM
+          repository: ${{ github.event.inputs.repository }}
+          ref: ${{ github.event.inputs.branch }}
           path: autotune
 
       - name: Checkout benchmarks
@@ -47,7 +57,7 @@ jobs:
         run: |
           echo Build autotune
           cd autotune
-          ./build.sh -t autotune:int-test
+          ./build.sh -i ${{ github.event.inputs.image }}
           docker images | grep autotune     
       - name: Install Prometheus on minikube
         run: |
@@ -62,13 +72,14 @@ jobs:
 
       - name: Docker Push
         run: |
-          docker tag autotune:int-test kruize/autotune:int-test
-          docker push kruize/autotune:int-test
+          docker tag  ${{ github.event.inputs.image }} chandra25ms/${{ github.event.inputs.image }}
+          docker push chandra25ms/${{ github.event.inputs.image }}
+          
       - name: Run Analyzer API tests
         run: |
           echo Running Basic API tests
           cd autotune/tests
-          ./test_autotune.sh -c minikube -i kruize/autotune:int-test --tctype=functional --testsuite=basic_api_tests --resultsdir=${GITHUB_WORKSPACE} -r ${GITHUB_WORKSPACE}/benchmarks
+          ./test_autotune.sh -c minikube -i chandra25ms/${{ github.event.inputs.image }} --tctype=functional --testsuite=${{ github.event.inputs.testsuite }} --resultsdir=${GITHUB_WORKSPACE} -r ${GITHUB_WORKSPACE}/benchmarks
       - name: Archive results
         if: always()
         run: |
