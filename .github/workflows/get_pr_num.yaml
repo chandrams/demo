@@ -11,6 +11,8 @@ jobs:
   job1:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
       - name: Use Get PR Number action
         id: pr_action
         uses: ./.github/actions/get_pr_number.yml
@@ -23,6 +25,8 @@ jobs:
   job2:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
       - name: Use Get PR Number action
         id: pr_action
         uses: ./.github/actions/get_pr_number.yml
