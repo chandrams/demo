@@ -23,6 +23,18 @@ jobs:
         
       - name: Debug Comment Content
         run: echo "Comment :${{ github.event.comment.body }}"
+
+      - name: Set latest commit status as pending
+        uses: myrotvorets/set-commit-status-action@master
+        with:
+          sha: ${{ steps.comment-branch.outputs.head_sha }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          status: pending
+
+      - name: Checkout PR branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.comment-branch.outputs.head_ref }}
     
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.3.0
