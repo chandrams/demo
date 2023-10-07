@@ -17,6 +17,10 @@ jobs:
 
     runs-on: ubuntu-20.04
     steps:
+      - name: Get PR branch
+        uses: xt0rted/pull-request-comment-branch@v1
+        id: comment-branch
+        
       - name: Debug Comment Content
         run: echo "Comment :${{ github.event.comment.body }}"
     
