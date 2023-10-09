@@ -46,6 +46,16 @@ jobs:
           cd autotune-fault
           cd tests/scripts/remote_monitoring_tests/fault_tolerant_tests         
           ./remote_monitoring_fault_tolerant_tests.sh -c minikube -i ${{ github.event.inputs.image }}  -r  ${GITHUB_WORKSPACE}
+
+      - name: Run Kruize remote monitoring stress test on minikube
+        if: always()
+        run: |
+          ps -ef | grep python
+          echo Running Kruize remote monitoring fault tolerant testsuite on minikube
+          cd autotune-fault
+          cd tests/scripts/remote_monitoring_tests/stress_test       
+          ./remote_monitoring_stress_test.sh -c minikube -i ${{ github.event.inputs.image }} -u 100 -e 30 -d 120 -t 1200 -r  ${GITHUB_WORKSPACE}
+          
           
       - name: Archive results
         if: always()
