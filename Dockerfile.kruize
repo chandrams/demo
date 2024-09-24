@@ -1,0 +1,15 @@
+FROM ubuntu:20.04
+
+# Install necessary packages
+RUN apt-get update && \
+    apt-get install -y git build-essential && \
+    rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
+WORKDIR /app
+
+# Clone the GitHub repository
+RUN git clone -b mvp_demo https://github.com/kruize/autotune.git .
+
+RUN docker build -t "quay.io/chandra25ms/kruize:mvp_demo" -f Dockerfile.autoutne
+
