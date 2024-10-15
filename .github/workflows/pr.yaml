@@ -77,8 +77,8 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
         with:
-          repository: chandrams/autotune
-          ref: pytest_ver
+          repository: kruize/autotune
+          ref: mvp_demo
           path: autotune
 
       - name: Setup Minikube
