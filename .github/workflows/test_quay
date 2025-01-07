@@ -1,4 +1,4 @@
-name: Test on Push
+name: Test on Push quay
 
 # Controls when the action will run. 
 on:
