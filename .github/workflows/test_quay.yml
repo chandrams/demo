@@ -36,7 +36,7 @@ jobs:
         run: |
           echo Build monitoring
           cd autotune
-          ./build.sh -i autotune_operator:pr_1 -o autotune_optuna:pr_1
+          ./build.sh -i autotune_operator:test_quay -o autotune_optuna:test_quay
           docker images | grep autotune
       - name: docker login
         uses: docker/login-action@v3
@@ -46,5 +46,5 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Docker Push
         run: |
-          docker tag autotune_operator:pr_${{ env.PR_NUMBER }} quay.io/kruize/autotune_operator:pr_${{ env.PR_NUMBER }}
-          docker push quay.io/kruize/autotune_operator:pr_${{ env.PR_NUMBER }}
+          docker tag autotune_operator:test_quay quay.io/kruize/autotune_operator:test_quay
+          docker push quay.io/kruize/autotune_operator:test_quay
