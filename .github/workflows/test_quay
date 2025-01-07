@@ -16,26 +16,26 @@ on:
   workflow_dispatch:
 
 jobs:
-  get_pr:
-     uses: ./.github/workflows/get-pr-number.yaml
-     
+
   # This workflow contains three jobs called "build job" , "deploy autotune" and "deploy crc"
   build_job:
-    needs: get_pr
+ 
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
-      - name: Get PR number
-        run: |
-          echo "PR_NUMBER=${{ needs.get_pr.outputs.pr_number }}" >> $GITHUB_ENV
+        with:
+          repository: kruize/autotune
+          ref: mvp_demo
+          path: autotune
+      
         
       - name: Build monitoring
         run: |
           echo Build monitoring
-          ./build.sh -i autotune_operator:pr_${{ env.PR_NUMBER }} -o autotune_optuna:pr_${{ env.PR_NUMBER }}
+          ./build.sh -i autotune_operator:pr_1 -o autotune_optuna:pr_1
           docker images | grep autotune
       - name: docker login
         uses: docker/login-action@v3
@@ -45,5 +45,5 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Docker Push
         run: |
-          docker tag autotune_operator:pr_${{ env.PR_NUMBER }} kruize/autotune_operator:pr_${{ env.PR_NUMBER }}
-          docker push kruize/autotune_operator:pr_${{ env.PR_NUMBER }}
+          docker tag autotune_operator:pr_${{ env.PR_NUMBER }} quay.io/kruize/autotune_operator:pr_${{ env.PR_NUMBER }}
+          docker push quay.io/kruize/autotune_operator:pr_${{ env.PR_NUMBER }}
