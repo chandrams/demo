@@ -35,6 +35,7 @@ jobs:
       - name: Build monitoring
         run: |
           echo Build monitoring
+          cd autotune
           ./build.sh -i autotune_operator:pr_1 -o autotune_optuna:pr_1
           docker images | grep autotune
       - name: docker login
