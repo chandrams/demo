@@ -1,0 +1,47 @@
+name: kind setup
+
+# Controls when the action will run. 
+on:  
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  kind-version: 'v0.24.0'
+  kind-image: 'kindest/node:v1.31.0'
+
+jobs:
+
+  # This workflow contains three jobs called "build job" , "deploy autotune" and "deploy crc"
+  build_job:
+ 
+    # The type of runner that the job will run on
+    runs-on: ubuntu-20.04
+
+    steps:
+      - name: Start kind cluster
+        uses: helm/kind-action@v1.11.0
+        with:
+          version: ${{ env.kind-version }}
+          node_image: ${{ env.kind-image }}
+          wait: 10s
+          cluster_name: kind
+
+      - name: Wait for cluster to bootstrap
+        run: |
+          kubectl wait --for=condition=Ready pods --all --all-namespaces --timeout=300s
+          git clone https://github.com/thanos-community/thanos-operator.git
+          cd thanos-operator
+          make install
+          kubectl get crds -n thanos-operator
+          make deploy IMG="quay.io/thanos/thanos-operator:main-2024-12-24-5e131ef"
+          kubectl get pods -n thanos-operator-system
+          make install-example
+          kubectl get pods -n thanos-operator-system
+   
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+        with:
+          repository: kruize/autotune
+          ref: mvp_demo
+          path: autotune
