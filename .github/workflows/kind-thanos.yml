@@ -32,11 +32,19 @@ jobs:
           kubectl wait --for=condition=Ready pods --all --all-namespaces --timeout=300s
           git clone https://github.com/thanos-community/thanos-operator.git
           cd thanos-operator
+          echo "******** Make install..."
           make install
+          sleep 10
+          echo "******** Get CRDS installed ..."
           kubectl get crds -n thanos-operator
+          echo "******** Make deploy..."
           make deploy IMG="quay.io/thanos/thanos-operator:main-2024-12-24-5e131ef"
+          sleep 10
+          echo "******** Get pods installed ..."
           kubectl get pods -n thanos-operator-system
+          echo "******** Make install-example..."
           make install-example
+          echo "******** Get pods installed ..."
           kubectl get pods -n thanos-operator-system
    
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
