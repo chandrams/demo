@@ -84,9 +84,12 @@ jobs:
           
       - name: Deploy kruize with thanos datasource
         run: |
-          echo "Deploying kruize..."
-          cd autotune
           
+          cd autotune
+          echo "Installing prometheus..."
+          ./scripts/prometheus_on_kind.sh -as
+          
+          echo "Deploying kruize..."
           manifest_file="./manifests/crc/default-db-included-installation/minikube/kruize-crc-minikube.yaml"
           ds_url="http://localhost:9090"
           sed -i 's/"name": "prometheus-1"/"name": "thanos"/' ${manifest_file}
