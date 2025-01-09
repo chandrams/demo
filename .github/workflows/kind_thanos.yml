@@ -66,6 +66,7 @@ jobs:
 
       - name: Copy the tsdb blocks to minio
         run: | 
+          kubectl port-forward -n thanos-operator-system svc/thanos-query-frontend-example-query 9090:9090 &
           kubectl port-forward -n thanos-operator-system svc/minio 9000:9000 &
           ps -ef | grep kubectl
           curl https://dl.min.io/client/mc/release/linux-amd64/mc --create-dirs -o ${GITHUB_WORKSPACE}/mc
@@ -84,4 +85,20 @@ jobs:
       - name: Deploy kruize with thanos datasource
         run: |
           echo "Deploying kruize..."
+          cd autotune
+          
+          manifest_file="./manifests/crc/default-db-included-installation/openshift/kruize-crc-minikube.yaml"
+          ds_url="http://localhost:9090"
+          sed -i 's/"name": "prometheus-1"/"name": "thanos"/' ${manifest_file}
+          sed -i 's/"serviceName": "prometheus-k8s"/"serviceName": ""/' ${manifest_file}
+          sed -i 's/"namespace": "monitoring"/"namespace": ""/' ${manifest_file}
+          sed -i 's#"url": ""#"url": "'"${ds_url}"'"#' ${manifest_file}
+
+          sed -i 's/\([[:space:]]*\)\(storage:\)[[:space:]]*[0-9]\+Mi/\1\2 1Gi/' ${manifest_file}
+          sed -i 's/\([[:space:]]*\)\(memory:\)[[:space:]]*".*"/\1\2 "2Gi"/; s/\([[:space:]]*\)\(cpu:\)[[:space:]]*".*"/\1\2 "2"/' ${manifest_file}
+
+          cat ${manifest_file}
+          
+          ./deploy.sh -c minikube -i quay.io/kruize/autotune_operator:0.3 -m crc
+          
              
