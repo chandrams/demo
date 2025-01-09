@@ -1,12 +1,7 @@
 name: Thanos setup on kind
 
 on:
-  push:
-    branches:
-      - main
-      - first-dev
-    tags:
-  pull_request:
+ workflow_dispatch:
 
 env:
   kind-image: 'quay.io/thanos/thanos-operator:main-2024-12-24-5e131ef'
