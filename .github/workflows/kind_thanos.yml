@@ -1,4 +1,4 @@
-
+name: Thanos setup on kind
   # This workflow contains three jobs called "build job" , "deploy autotune" and "deploy crc"
   build_job:
  
