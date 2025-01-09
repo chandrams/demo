@@ -1,6 +1,19 @@
 name: Thanos setup on kind
-  # This workflow contains three jobs called "build job" , "deploy autotune" and "deploy crc"
-  build_job:
+
+on:
+  push:
+    branches:
+      - main
+      - first-dev
+    tags:
+  pull_request:
+
+env:
+  kind-image: 'quay.io/thanos/thanos-operator:main-2024-12-24-5e131ef'
+  kind-version: 'v0.24.0'
+
+jobs:
+   thanos_test:
  
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
