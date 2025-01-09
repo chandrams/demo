@@ -17,6 +17,10 @@
       - name: Wait for cluster to bootstrap
         run: |
           kubectl wait --for=condition=Ready pods --all --all-namespaces --timeout=300s
+
+          LATEST=$(curl -s https://api.github.com/repos/prometheus-operator/prometheus-operator/releases/latest | jq -cr .tag_name)
+          curl -sL https://github.com/prometheus-operator/prometheus-operator/releases/download/${LATEST}/bundle.yaml | kubectl create -f -
+
           git clone https://github.com/thanos-community/thanos-operator.git
           cd thanos-operator
           echo "******** Make install..."
