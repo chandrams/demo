@@ -9,6 +9,7 @@ env:
 
 jobs:
    thanos_test:
+   
  
     # The type of runner that the job will run on
     runs-on: ubuntu-20.04
@@ -22,7 +23,7 @@ jobs:
           wait: 10s
           cluster_name: kind
 
-      - name: Wait for cluster to bootstrap
+      - name: Wait for cluster to bootstrap and setup thanos operator
         run: |
           kubectl wait --for=condition=Ready pods --all --all-namespaces --timeout=300s
 
@@ -31,24 +32,42 @@ jobs:
 
           git clone https://github.com/thanos-community/thanos-operator.git
           cd thanos-operator
-          echo "******** Make install..."
+          echo "***********************************"
+          echo "Install Thanos CRDS"
+          echo "***********************************"
           make install
-          sleep 10
-          echo "******** Get CRDS installed ..."
           kubectl get crds -n thanos-operator
-          echo "******** Make deploy..."
+          
+          echo "***********************************"
+          echo "Install Thanos operator"
+          echo "***********************************"
           make deploy IMG="quay.io/thanos/thanos-operator:main-2024-12-24-5e131ef"
-          sleep 10
-          echo "******** Get pods installed ..."
           kubectl get pods -n thanos-operator-system
-          echo "******** Make install-example..."
+          
+          echo "***********************************"
+          echo "Install Thanos components"
+          echo "***********************************"
           make install-example
-          echo "******** Get pods installed ..."
           kubectl get pods -n thanos-operator-system
-   
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+
+      - name: Create tsdb blocks using thanosbench
+        run: |      
+          echo "***********************************"
+          echo "Creating TSDB blocks"
+          echo "***********************************"
+          git clone -b kruize_profile https://github.com/chandrams/thanosbench.git
+          cd thanosbench
+          make build
+          maxtime=$(date -u +"%Y-%m-%dT%H:%M:%S.000Z")
+          echo "${maxtime}"
+          echo " ./thanosbench block plan -p kruize-1d-tiny --max-time="${maxtime}" | ./thanosbench block gen --workers=20 --output.dir=${GIT_WORKSPACE}/tsdb"
+          ./thanosbench block plan -p kruize-1d-tiny --max-time="${maxtime}" | ./thanosbench block gen --workers=20 --output.dir=${GIT_WORKSPACE}/tsdb
+          ls ${GIT_WORKSPACE}/tsdb
+          
       - uses: actions/checkout@v3
         with:
           repository: kruize/autotune
           ref: mvp_demo
           path: autotune
+      
+     
