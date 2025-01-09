@@ -68,6 +68,9 @@ jobs:
         run: | 
           kubectl port-forward -n thanos-operator-system svc/minio 9000:9000 &
           ps -ef | grep kubectl
+          curl https://dl.min.io/client/mc/release/linux-amd64/mc --create-dirs -o ${GITHUB_WORKSPACE}/mc
+          chmod +x ${GITHUB_WORKSPACE}/mc
+          export PATH=$PATH:${GITHUB_WORKSPACE}
           mc alias set myminio http://localhost:9000 thanos thanos-secret
           mc cp -r tsdb/* myminio/thanos         
           
