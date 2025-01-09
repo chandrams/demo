@@ -62,12 +62,23 @@ jobs:
           echo "${maxtime}"
           echo " ./thanosbench block plan -p kruize-1d-tiny --max-time="${maxtime}" | ./thanosbench block gen --workers=20 --output.dir=${GITHUB_WORKSPACE}/tsdb"
           ./thanosbench block plan -p kruize-1d-tiny --max-time="${maxtime}" | ./thanosbench block gen --workers=20 --output.dir=${GITHUB_WORKSPACE}/tsdb
-          ls ${GIT_WORKSPACE}/tsdb
+          ls ${GITHUB_WORKSPACE}/tsdb
+
+      - name: Copy the tsdb blocks to minio
+        run: | 
+          kubectl port-forward -n thanos-operator-system svc/minio 9000:9000 &
+          ps -ef | grep kubectl
+          mc alias set myminio http://localhost:9000 thanos thanos-secret
+          mc cp -r tsdb/* myminio/thanos         
           
-      - uses: actions/checkout@v3
+      - name: Clone autotune repository
+        uses: actions/checkout@v3
         with:
           repository: kruize/autotune
           ref: mvp_demo
           path: autotune
-      
-     
+          
+      - name: Deploy kruize with thanos datasource
+        run: |
+          echo "Deploying kruize..."
+             
