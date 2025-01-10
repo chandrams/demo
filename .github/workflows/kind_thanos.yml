@@ -121,7 +121,7 @@ jobs:
           sleep 20
           ps -ef | grep port-forward
           echo "Creating performance profile..."
-          curl -s -X POST http://127.0.0.1:8080/createPerformanceProfile -d @./manifests/autotune/performance-profiles/resource_optimization_local_monitoring.json
+          curl -s -X POST http://127.0.0.1:8080/createMetricProfile -d @./manifests/autotune/performance-profiles/resource_optimization_local_monitoring.json
           echo "Invoking Bulk API..."
           curl -X POST http://127.0.0.1:8080/bulk -d '{"filter": {"exclude": {"namespace": [], "workload": [], "containers": [], "labels": {}}, "include": {"namespace": [], "workload": [], "containers": [], "labels": {}}}, "datasource": "thanos"}'
              
