@@ -123,6 +123,9 @@ jobs:
           echo "Creating performance profile..."
           curl -s -X POST http://127.0.0.1:8080/createMetricProfile -d @./manifests/autotune/performance-profiles/resource_optimization_local_monitoring.json
           echo ""
+          echo "List Datasources..."
+          curl POST http://127.0.0.1:8080/datasources
+          echo ""
           echo "Invoking Bulk API..."
           curl -s -X POST http://127.0.0.1:8080/bulk -d '{"filter": {"exclude": {"namespace": [], "workload": [], "containers": [], "labels": {}}, "include": {"namespace": [], "workload": [], "containers": [], "labels": {}}}, "datasource": "thanos"}'
              
