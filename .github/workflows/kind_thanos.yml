@@ -115,7 +115,8 @@ jobs:
           cat ${manifest_file}
           
           ./deploy.sh -c minikube -i quay.io/kruize/autotune_operator:0.3 -m crc
-          kubectl get svc -n monitoring
+          kubectl port-forward -n monitoring svc/kruize 8080:8080 &
+          
           curl -X POST http://localhost:8080/createPerformanceProfile -d @./manifests/autotune/performance-profiles/resource_optimization_local_monitoring.json
           curl -X POST http://localhost:8080/bulk -d '{"filter": {"exclude": {"namespace": [], "workload": [], "containers": [], "labels": {}}, "include": {"namespace": [], "workload": [], "containers": [], "labels": {}}}, "datasource": "thanos"}'
              
