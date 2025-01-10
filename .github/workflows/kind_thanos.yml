@@ -103,7 +103,7 @@ jobs:
           cd autotune            
           echo "Deploying kruize..."
           manifest_file="./manifests/crc/default-db-included-installation/minikube/kruize-crc-minikube.yaml"
-          ds_url="http://localhost:9090"
+          ds_url="http://127.0.0.1:9090"
           sed -i 's/"name": "prometheus-1"/"name": "thanos"/' ${manifest_file}
           sed -i 's/"serviceName": "prometheus-k8s"/"serviceName": ""/' ${manifest_file}
           sed -i 's/"namespace": "monitoring"/"namespace": ""/' ${manifest_file}
@@ -122,6 +122,7 @@ jobs:
           ps -ef | grep port-forward
           echo "Creating performance profile..."
           curl -s -X POST http://127.0.0.1:8080/createMetricProfile -d @./manifests/autotune/performance-profiles/resource_optimization_local_monitoring.json
+          echo ""
           echo "Invoking Bulk API..."
-          curl -X POST http://127.0.0.1:8080/bulk -d '{"filter": {"exclude": {"namespace": [], "workload": [], "containers": [], "labels": {}}, "include": {"namespace": [], "workload": [], "containers": [], "labels": {}}}, "datasource": "thanos"}'
+          curl -s -X POST http://127.0.0.1:8080/bulk -d '{"filter": {"exclude": {"namespace": [], "workload": [], "containers": [], "labels": {}}, "include": {"namespace": [], "workload": [], "containers": [], "labels": {}}}, "datasource": "thanos"}'
              
