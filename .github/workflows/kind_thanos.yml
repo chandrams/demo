@@ -27,8 +27,24 @@ jobs:
         run: |
           kubectl wait --for=condition=Ready pods --all --all-namespaces --timeout=300s
 
-          LATEST=$(curl -s https://api.github.com/repos/prometheus-operator/prometheus-operator/releases/latest | jq -cr .tag_name)
-          curl -sL https://github.com/prometheus-operator/prometheus-operator/releases/download/${LATEST}/bundle.yaml | kubectl create -f -
+      - name: Clone autotune repository
+        uses: actions/checkout@v3
+        with:
+          repository: kruize/autotune
+          ref: mvp_demo
+          path: autotune
+
+      - name: Install Prometheus
+        run: |          
+          cd autotune
+          echo "Installing prometheus..."
+          ./scripts/prometheus_on_kind.sh -as
+
+      - name: Setup thanos operator
+        run: |
+          
+          #LATEST=$(curl -s https://api.github.com/repos/prometheus-operator/prometheus-operator/releases/latest | jq -cr .tag_name)
+          #curl -sL https://github.com/prometheus-operator/prometheus-operator/releases/download/${LATEST}/bundle.yaml | kubectl create -f -
 
           git clone https://github.com/thanos-community/thanos-operator.git
           cd thanos-operator
@@ -83,12 +99,8 @@ jobs:
           path: autotune
           
       - name: Deploy kruize with thanos datasource
-        run: |
-          
-          cd autotune
-          echo "Installing prometheus..."
-          ./scripts/prometheus_on_kind.sh -as
-          
+        run: |          
+          cd autotune            
           echo "Deploying kruize..."
           manifest_file="./manifests/crc/default-db-included-installation/minikube/kruize-crc-minikube.yaml"
           ds_url="http://localhost:9090"
