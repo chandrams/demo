@@ -21,3 +21,4 @@ jobs:
           echo "id=$GITHUB_RUN_ID" >> $GITHUB_OUTPUT
           echo "url=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           echo "id=$GITHUB_RUN_ID"
+          echo "Running test"
