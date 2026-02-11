@@ -5,10 +5,11 @@ on:
     inputs:
       kruize_image: 
         description: 'Kruize docker image'
-        required: true
+        default: 'quay.io/kruize/autotune_operator:0.8.1'
+    
       kruize_operator_image: 
         description: 'Kruize operator docker image'
-        required: true
+        default: 'quay.io/kruize/kruize-operator:0.0.4'
 env:
   GO_VERSION: '1.24.7'
         
