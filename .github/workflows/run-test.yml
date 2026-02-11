@@ -9,13 +9,14 @@ on:
       kruize_operator_image: 
         description: 'Kruize operator docker image'
         required: true
+env:
+  GO_VERSION: '1.24.7'
         
 jobs:
-  releasetest:
+  kruize_demos_test_minikube:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      
+      - uses: actions/checkout@v4    
       
     
       - uses: actions/checkout@v4
@@ -42,13 +43,86 @@ jobs:
         run: |
           cd ${GITHUB_WORKSPACE}
           ls
-          tar cvf kruize-demos-test-results.tar kruize-demos-test-results-*
+          tar cvf kruize_demos_test_minikube_results.tar kruize-demos-test-results-*
           ls
           
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
         with:
-           name: kruize_demos_test_results
-           path: ./kruize_demos_test_results.tar
+           name: kruize_demos_test_minikube_results
+           path: ./kruize_demos_test_minikube_results.tar
+           retention-days: 2
+
+  kruize_demos_test_kind:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4    
+      
+    
+      - uses: actions/checkout@v4
+        with:
+          repository: kruize/autotune
+          path: autotune
+          ref: mvp_demo
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: true
+
+      - name: Install dependencies
+        run: |
+          go mod download
+          go mod verify
+
+      - name: Create Kind config
+        run: |
+          cat <<EOF > /tmp/kind-config.yaml
+          kind: Cluster
+          apiVersion: kind.x-k8s.io/v1alpha4
+          nodes:
+          - role: control-plane
+            extraPortMappings:
+            - containerPort: 30080
+              hostPort: 30080
+              protocol: TCP
+          EOF
+
+      - name: Set up Kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: kruize-test-cluster
+          wait: 120s
+          config: /tmp/kind-config.yaml
+
+      - name: Verify Kind cluster
+        run: |
+          kubectl cluster-info
+          kubectl get nodes
+          kubectl version
+
+    
+      - name: Run Kruize demos test with operator on kind
+        run: |
+          ps -ef | grep python
+          echo Running Kruize demos test with operator on kind
+          cd autotune/tests/scripts/kruize_demos_test        
+          ./kruize_demos_test.sh -c kind -i ${{ github.event.inputs.kruize_image }} -o ${{ github.event.inputs.kruize_operator_image }} -r ${GITHUB_WORKSPACE} -t vpa
+              
+      - name: Archive results
+        if: always()
+        run: |
+          cd ${GITHUB_WORKSPACE}
+          ls
+          tar cvf kruize_demos_test_kind_results.tar kruize-demos-test-results-*
+          ls
+          
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+           name: kruize_demos_test_kind_results
+           path: ./kruize_demos_test_kind_results.tar
            retention-days: 2
