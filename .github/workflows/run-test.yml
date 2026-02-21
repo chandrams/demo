@@ -92,7 +92,7 @@ jobs:
           ps -ef | grep python
           echo Running Kruize demos test with operator on kind
           cd autotune/tests/scripts/kruize_demos_test        
-          ./kruize_demos_test.sh -c kind -i ${{ github.event.inputs.kruize_image }} -o ${{ github.event.inputs.kruize_operator_image }} -r ${GITHUB_WORKSPACE} -t vpa
+          ./kruize_demos_test.sh -c kind -i ${{ github.event.inputs.kruize_image }} -o ${{ github.event.inputs.kruize_operator_image }} -r ${GITHUB_WORKSPACE}
               
       - name: Archive results
         if: always()
