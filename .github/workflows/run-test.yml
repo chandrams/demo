@@ -37,7 +37,8 @@ jobs:
           ps -ef | grep python
           echo Running Kruize demos test with operator on minikube
           cd autotune/tests/scripts/kruize_demos_test
-          export MIN_CPU=4
+          export MIN_CPU=2
+          export MIN_MEM=3000
           
           ./kruize_demos_test.sh -c minikube -i ${{ github.event.inputs.kruize_image }} -o ${{ github.event.inputs.kruize_operator_image }} -r ${GITHUB_WORKSPACE} -t vpa
               
