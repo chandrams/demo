@@ -24,6 +24,7 @@ jobs:
 
       - name: Configure Git
         run: |
+          cd kruize-helm
           git config user.name "chandrams"
           git config user.email "csubrama@redhat.com"
 
