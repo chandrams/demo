@@ -39,10 +39,12 @@ jobs:
 
       - name: Package Helm Chart
         run: |
+          cd kruize-helm
           helm package charts/kruize
 
       - name: Push to GHCR
         run: |
+          cd kruize-helm
           helm push kruize-*.tgz oci://ghcr.io/${{ github.repository_owner }}
 
       - name: Create GitHub Release
