@@ -17,7 +17,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          repository: kruize/kruize-helm
+          repository: chandrams/kruize-helm
           ref: helm_charts_minikube
           path: kruize-helm
 
