@@ -51,19 +51,36 @@ jobs:
           echo "  • with-openshift-values/ - Tests using values-openshift.yaml"
           echo ""
           cd kruize-helm
-          helm unittest charts/kruize --color --with-subchart=false
+          helm unittest \
+            -f 'tests/with-default-values/*.yaml' \
+            -f 'tests/with-minikube-values/*.yaml' \
+            -f 'tests/with-openshift-values/*.yaml' \
+            --color --with-subchart=false \
+            charts/kruize
 
       - name: Generate JUnit test report
         if: always()
         run: |
           cd kruize-helm
-          helm unittest --output-type JUnit --output-file test-results.xml --with-subchart=false charts/kruize
+          helm unittest \
+            -f 'tests/with-default-values/*.yaml' \
+            -f 'tests/with-minikube-values/*.yaml' \
+            -f 'tests/with-openshift-values/*.yaml' \
+            --output-type JUnit --output-file test-results.xml --with-subchart=false \
+            charts/kruize
+
 
       - name: Generate HTML test report
         if: always()
         run: |
           cd kruize-helm
-          helm unittest --output-type html --output-file test-results.html --with-subchart=false charts/kruize
+          helm unittest \
+            -f 'tests/with-default-values/*.yaml' \
+            -f 'tests/with-minikube-values/*.yaml' \
+            -f 'tests/with-openshift-values/*.yaml' \
+            --output-type html --output-file test-results.html --with-subchart=false \
+            charts/kruize
+
 
       - name: Upload test results (XML & HTML)
         if: always()
