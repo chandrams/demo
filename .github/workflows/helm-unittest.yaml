@@ -32,8 +32,7 @@ jobs:
         with:
          repository: chandrams/kruize-helm
          ref: helm_charts_tests
-         path: kruize-helm
-
+         
       - name: Set up Helm
         uses: azure/setup-helm@v4.3.1
         with:
