@@ -52,9 +52,9 @@ jobs:
           echo ""
           cd kruize-helm
           helm unittest \
-            -f 'charts/kruize/tests/with-default-values/*.yaml' \
-            -f 'charts/kruize/tests/with-minikube-values/*.yaml' \
-            -f 'charts/kruize/tests/with-openshift-values/*.yaml' \
+            -f 'tests/with-default-values/*.yaml' \
+            -f 'tests/with-minikube-values/*.yaml' \
+            -f 'tests/with-openshift-values/*.yaml' \
             --color --with-subchart=false \
             charts/kruize
 
@@ -63,9 +63,9 @@ jobs:
         run: |
           cd kruize-helm
           helm unittest \
-            -f 'charts/kruize/tests/with-default-values/*.yaml' \
-            -f 'charts/kruize/tests/with-minikube-values/*.yaml' \
-            -f 'charts/kruize/tests/with-openshift-values/*.yaml' \
+            -f 'tests/with-default-values/*.yaml' \
+            -f 'tests/with-minikube-values/*.yaml' \
+            -f 'tests/with-openshift-values/*.yaml' \
             --output-type JUnit --output-file test-results.xml --with-subchart=false \
             charts/kruize
 
@@ -75,9 +75,9 @@ jobs:
         run: |
           cd kruize-helm
           helm unittest \
-            -f 'charts/kruize/tests/with-default-values/*.yaml' \
-            -f 'charts/kruize/tests/with-minikube-values/*.yaml' \
-            -f 'charts/kruize/tests/with-openshift-values/*.yaml' \
+            -f 'tests/with-default-values/*.yaml' \
+            -f 'tests/with-minikube-values/*.yaml' \
+            -f 'tests/with-openshift-values/*.yaml' \
             --output-type html --output-file test-results.html --with-subchart=false \
             charts/kruize
 
