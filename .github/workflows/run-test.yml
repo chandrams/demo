@@ -5,7 +5,7 @@ on:
     inputs:
       kruize_image: 
         description: 'Kruize docker image'
-        default: 'quay.io/kruize/autotune_operator:0.8.1'
+        default: 'quay.io/kruize/autotune_operator:0.9'
     
       kruize_operator_image: 
         description: 'Kruize operator docker image'
