@@ -1,0 +1,46 @@
+name: Release Kruize Helm Chart to GHCR without gitconfig
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Trigger on version tags like v0.1.0
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  packages: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: chandrams/kruize-helm
+          ref: helm_charts_minikube
+          path: kruize-helm
+
+
+    
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: v3.13.0
+
+      - name: Login to GHCR
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | helm registry login ghcr.io -u ${{ github.actor }} --password-stdin
+
+      - name: Package Helm Chart
+        run: |
+          cd kruize-helm
+          helm package charts/kruize
+
+      - name: Push to GHCR
+        run: |
+          cd kruize-helm
+          echo "helm push kruize-*.tgz oci://ghcr.io/${{ github.repository_owner }}"
+          helm push kruize-*.tgz oci://ghcr.io/${{ github.repository_owner }}
+
+   
