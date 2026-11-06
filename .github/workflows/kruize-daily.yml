@@ -45,15 +45,17 @@ jobs:
 
   run_tests:
     # The type of runner that the job will run on
-    needs: [build_job, get_pr]
+    needs: [build_job]
     runs-on: ubuntu-latest
 
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v7
-      - name: Get PR number
-        run: |
-           echo "PR_NUMBER=${{ needs.get_pr.outputs.pr_number }}" >> $GITHUB_ENV
+        with:
+          repository: kruize/autotune
+          ref: mvp_demo
+          path: autotune
+     
       - name: Setup Minikube
         uses: manusa/actions-setup-minikube@v2.18.0
         with:
